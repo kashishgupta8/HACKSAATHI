@@ -1,1 +1,1026 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🤝 HACK SAATHHI — Neon Game UI</title>
+<meta name="description" content="Hack Saathi — neon game-style single-file frontend with chatbot, reviews, judges feedback, university registration, profile and gamification" />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Dark Theme Variables */
+    --bg:#0a0a14;
+    --panel:#141424;
+    --muted:#a0a0b0;
+    --neon-1: #9b59f5;   /* brighter purple */
+    --neon-2: #2dd4e6;   /* brighter cyan */
+    --neon-3: #ff85c0;   /* brighter pink */
+    --glass: rgba(20,20,36,0.7); /* dark glass */
+    --glass-2: rgba(255,255,255,0.06); /* light overlay on dark */
+    --radius:16px;
+    --gap:18px;
+    --main-font: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    --display-font: 'Orbitron', sans-serif;
+    --shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;
+    background-color: var(--bg); /* Set base dark color */
+    background-image:
+        radial-gradient(800px 360px at 10% 10%, rgba(155,89,245,0.15), transparent),
+        radial-gradient(700px 320px at 90% 70%, rgba(45,212,230,0.12), transparent),
+        linear-gradient(180deg,var(--bg) 0%, #00000a 100%);
+    color:#f0f0f8; /* light text on dark background */
+    font-family:var(--main-font);
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    padding-bottom:40px;
+    /* Adding subtle 'moving' effect with background position animation */
+    background-size: 300% 300%;
+    animation: moveBackground 60s ease infinite alternate;
+  }
+  /* Moving Background Keyframes */
+  @keyframes moveBackground {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+  }
+  /* Top nav */
+  header.topbar{
+    position:sticky;top:0;z-index:80;
+    display:flex;align-items:center;justify-content:space-between;padding:12px 26px;
+    background:linear-gradient(180deg, rgba(20,20,36,0.8), rgba(20,20,36,0.9));
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .brand-row{display:flex;align-items:center;gap:14px}
+  .site-title{display:flex;align-items:center;gap:12px;}
+  .site-title h1{
+    margin:0;font-size:28px;font-weight:900;letter-spacing:1px;
+    font-family:var(--display-font);
+    background:linear-gradient(90deg,var(--neon-2),var(--neon-1),var(--neon-3));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 10px 28px rgba(155,89,245,0.08);
+  }
+  .site-sub{font-size:12px;color:var(--muted);margin-top:3px}
+  nav.topnav{display:flex;gap:10px;align-items:center}
+  nav.topnav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:700}
+  nav.topnav a:hover, nav.topnav a.active{color:var(--neon-2);background:linear-gradient(90deg, rgba(45,212,230,0.1), rgba(155,89,245,0.08));box-shadow:0 8px 24px rgba(155,89,245,0.2)}
+  /* layout */
+  .wrap{max-width:1200px;margin:22px auto;padding:14px;display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}
+  @media (max-width:980px){.wrap{grid-template-columns:1fr;padding:12px}}
+  /* sidebar profile (left) */
+  .sidebar{
+    background: var(--panel);
+    border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);
+    position:sticky;top:70px;height:fit-content;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .profile{
+    display:flex;gap:12px;align-items:center;padding:8px;border-radius:12px;background:linear-gradient(180deg, rgba(155,89,245,0.15), rgba(45,212,230,0.1));
+  }
+  .avatar{
+    width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;
+    background:linear-gradient(135deg,var(--neon-1),var(--neon-2));color:var(--bg);font-family:var(--display-font);font-size:22px;box-shadow:0 6px 20px rgba(45,212,230,0.06);
+  }
+  .profile h3{margin:0;font-size:16px}
+  .profile .muted{font-size:13px;color:var(--muted)}
+  .xp-bar{height:12px;border-radius:999px;background:rgba(255,255,255,0.06);overflow:hidden;margin-top:8px}
+  .xp-fill{height:100%;width:30%;border-radius:999px;background:linear-gradient(90deg,var(--neon-2),var(--neon-1));transition:width .6s ease}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .badge{background:linear-gradient(90deg, rgba(155,89,245,0.12), rgba(45,212,230,0.08));padding:6px 8px;border-radius:999px;font-size:12px;font-weight:700}
+  .task-list{margin-top:12px}
+  .task{display:flex;justify-content:space-between;align-items:center;padding:8px;margin-top:8px;background:rgba(255,255,255,0.06);border-radius:10px}
+  /* main area */
+  .main{display:flex;flex-direction:column;gap:var(--gap)}
+  .card{background:var(--panel);border-radius:12px;padding:16px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.08)}
+  h2.section-title{font-size:20px;margin:0 0 6px 0;color:inherit}
+  .muted-lg{color:var(--muted);font-size:14px}
+  input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(20,20,36,0.9);color:inherit;font-size:15px}
+  label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+  .row{display:flex;gap:12px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;border:0;cursor:pointer;font-weight:800;font-size:14px;letter-spacing:0.6px;text-decoration:none;}
+  .cta {
+    background: linear-gradient(90deg, rgba(45,212,230,0.15), rgba(155,89,245,0.15));
+    color: inherit;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .cta.primary {
+    background: linear-gradient(90deg, var(--neon-2), var(--neon-1), var(--neon-3));
+    color: var(--bg);
+    box-shadow: 0 10px 30px rgba(155,89,245,0.08);
+  }
+  .cta:hover{ transform: translateY(-6px) scale(1.02); box-shadow: 0 20px 40px rgba(155,89,245,0.08) }
+  .cta.soft { background: linear-gradient(90deg, rgba(155,89,245,0.1), rgba(255,133,192,0.08)); color: inherit }
+  .pill{background:linear-gradient(90deg, rgba(155,89,245,0.08), rgba(45,212,230,0.05));padding:6px 10px;border-radius:999px;color:var(--muted);font-weight:700}
+  .gallery{display:flex;gap:12px;overflow-x:auto;padding:8px}
+  .project{min-width:240px;border-radius:12px;padding:12px;background:linear-gradient(180deg, rgba(20,20,36,0.9), rgba(25,25,45,0.9));border:1px solid rgba(255,255,255,0.08)}
+  /* chatbot + chat list */
+  .two-col{display:grid;grid-template-columns:1fr 420px;gap:12px}
+  @media (max-width:1100px){ .two-col{grid-template-columns:1fr} .sidebar{position:relative;top:auto} }
+  .chat-window{height:360px;overflow:auto;padding:12px;border-radius:10px;background:rgba(20,20,36,0.9);border:1px solid rgba(255,255,255,0.1)}
+  .msg{padding:10px;margin:8px 0;border-radius:10px;max-width:80%;display:inline-block}
+  .me{background:linear-gradient(90deg,var(--neon-1),var(--neon-2));color:var(--bg);align-self:flex-end}
+  .them{background:rgba(255,255,255,0.08);align-self:flex-start;color:inherit}
+  .small-muted{font-size:12px;color:var(--muted)}
+  /* modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;padding:18px;z-index:160}
+  .modal-backdrop.open{display:flex}
+  .modal{width:820px;max-width:96%;background:var(--panel);border-radius:12px;padding:18px;box-shadow:0 30px 80px rgba(0,0,0,0.4)}
+  .modal h3{margin:0 0 8px 0}
+  /* confetti canvas */
+  #confetti{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:140}
+  /* small helpers */
+  .muted{color:var(--muted)}
+  .flex{display:flex;align-items:center;gap:8px}
+  .center{display:flex;align-items:center;justify-content:center}
+  .glow{box-shadow:0 8px 30px rgba(155,89,245,0.12)}
+</style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
 
+  <header class="topbar" role="banner">
+    <div class="brand-row">
+      <div style="display:flex;align-items:center;gap:10px">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 10px 22px rgba(124,58,237,0.08))">
+          <path d="M2.5 13c.6-1.2 2.1-2.6 4.2-2.8 2-.2 3.6 1 5 2.1 1.4 1.1 3.3 1.1 4.8.1" stroke="url(#g1)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 7s1.2-1.6 3.4-1.6c2.2 0 3.2 1.6 3.7 2.1" stroke="url(#g1)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9.5 12.4l-1.6 1.6c-.6.6-.6 1.6 0 2.2l2.9 2.9c.6.6 1.6.6 2.2 0l1.4-1.4" stroke="url(#g1)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#2dd4e6"/><stop offset="1" stop-color="#9b59f5"/></linearGradient></defs>
+        </svg>
+      </div>
+      <div class="site-title" style="margin-left:6px">
+        <div>
+          <h1>HACK SAATHI</h1>
+          <div class="site-sub muted">Collaborate • Innovate • Level Up</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="topnav" role="navigation" aria-label="Main nav">
+      <a href="#" id="n-home" class="active">Home</a>
+      <a href="#" id="n-hack">Hackathons</a>
+      <a href="#" id="n-inno">Innoverse</a>
+      <a href="#" id="n-about">About</a>
+      <button class="btn cta soft" id="btn-sign" style="margin-left:12px">🔐 Sign up / Login</button>
+    </nav>
+  </header>
+
+  <div class="wrap" role="application" aria-label="Hack Saathi app">
+
+    <aside class="sidebar" aria-label="Sidebar">
+      <div class="profile">
+        <div class="avatar" id="avatar">HT</div>
+        <div>
+          <h3 id="pr-name">Guest</h3>
+          <div class="muted small-muted" id="pr-role">Visitor</div>
+          <div class="xp-bar" aria-hidden="true">
+            <div id="xp-fill" class="xp-fill" style="width:10%"></div>
+          </div>
+          <div class="small-muted" style="margin-top:6px">Level <strong id="pr-level">1</strong> • <span id="pr-xp">30 XP</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="card gl ow">
+        <div class="muted small-muted">Badges</div>
+        <div class="badges" id="sidebar-badges"></div>
+
+        <div class="task-list">
+          <div class="muted small-muted" style="margin-top:10px">Quests</div>
+          <div class="task"><div>Submit a project</div><button class="btn cta soft" data-action="submit-project">Do</button></div>
+          <div class="task"><div>Post an idea</div><button class="btn cta soft" data-action="post-idea">Do</button></div>
+          <div class="task"><div>Give judge feedback</div><button class="btn cta soft" data-action="give-feedback">Do</button></div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="card">
+        <div class="muted small-muted">Quick Links</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+          <button class="btn cta primary" id="link-meet">📹 Start Google Meet</button> <button class="btn cta" id="link-chat">🧠 Chatbot</button>
+          <button class="btn cta" id="link-hack">📁 Hackathons</button>
+          <button class="btn cta" id="link-inno">🌌 Innoverse</button>
+        </div>
+      </div>
+
+    </aside>
+
+    <main class="main" id="main">
+
+      <section id="page-home" class="card" aria-labelledby="home-title">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <h2 class="section-title" id="home-title">Welcome to Hack Saathi — Neon Game Hub</h2>
+            <div class="muted-lg">Your hackathon playground. Earn XP, collect badges, chat & review.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="pill">Next: <strong id="next-hack">Challenge Week • Nov 10, 2025</strong></div>
+            <div class="pill" id="home-cd">--d --h --m</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;display:grid;grid-template-columns:1fr 380px;gap:12px">
+          <div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <strong>Hackathon Directory</strong>
+                <div class="muted small-muted">Participants • Judges • Admin</div>
+              </div>
+              <div style="margin-top:12px" class="gallery" id="prev-gallery"></div>
+              <div style="margin-top:12px;display:flex;gap:8px">
+                <button class="btn cta primary" id="to-hack">📁 Explore HACKS</button>
+                <button class="btn cta" id="to-inno">🌌 Enter Innoverse</button>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <strong>Recent Projects</strong>
+              <div id="home-projects" style="margin-top:8px"></div>
+            </div>
+
+          </div>
+
+          <aside>
+            <div class="card">
+              <strong>Live Chatbot</strong>
+              <div class="small-muted" style="margin-top:6px">Ask the assistant for tips, or quick mock judging.</div>
+              <div style="margin-top:8px" id="mini-chat-window" class="chat-window"></div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="mini-chat-input" placeholder="Ask the bot (e.g., 'how to make my pitch?')" />
+                <button class="btn cta primary" id="mini-chat-send">Send</button>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <strong>Leaderboard</strong>
+              <div id="leaderboard" style="margin-top:8px"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="page-hack" class="card" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0">Hackathon Directory — Register & Submit</h2>
+          <div class="muted small-muted">Make a profile, register as University / Graduate</div>
+        </div>
+
+        <div style="margin-top:12px" class="two-col">
+          <div>
+            <div class="card">
+              <h3 style="margin:0">Register / Create Team</h3>
+              <form id="reg-form" autocomplete="off">
+                <label>Name<input id="reg-name" required /></label>
+                <label>Email<input id="reg-email" type="email" required/></label>
+                <label>Role<select id="reg-role"><option>Participant</option><option>Mentor</option><option>Judge</option></select></label>
+                <label>University / Institute<input id="reg-university" placeholder="e.g. IGDTUW or Delhi University"/></label>
+                <label>Degree / Level<select id="reg-degree"><option>Undergraduate</option><option>Graduate</option><option>PhD</option><option>Other</option></select></label>
+                <label>Graduation Year<input id="reg-gradyear" type="number" min="2000" max="2035" placeholder="2026"/></label>
+                <label>Skills<input id="reg-skills" placeholder="comma-separated (frontend,design,ml)"/></label>
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <button class="btn cta primary" type="submit">Register</button>
+                  <button class="btn cta soft" type="button" id="create-team-btn">Create Team</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h3 style="margin:0">Submit Project</h3>
+              <form id="proj-form" autocomplete="off">
+                <label>Project Title<input id="proj-title" required/></label>
+                <label>Short Description<textarea id="proj-desc" rows="3"></textarea></label>
+                <label>GitHub URL<input id="proj-git"/></label>
+                <label>Demo Video URL<input id="proj-video"/></label>
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <button class="btn cta primary" type="submit">Submit</button>
+                  <button class="btn cta soft" type="button" id="clear-sub">Clear</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h3 style="margin:0">Project Gallery</h3>
+              <div id="gallery" class="gallery"></div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <h4 style="margin:0">Participants — Chat & Review</h4>
+              <div class="small-muted" style="margin-top:6px">Select a participant to open a private review/chat session</div>
+              <div id="participant-list" style="margin-top:10px"></div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h4 style="margin:0">Judges Feedback</h4>
+              <form id="judge-form">
+                <label>Judge Name<input id="judge-name" placeholder="e.g., Prof. Sharma" /></label>
+                <label>Project (title)<input id="judge-project" /></label>
+                <label>Feedback<textarea id="judge-feedback" rows="3" placeholder="Constructive feedback..."></textarea></label>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="btn cta primary" type="submit">Submit Feedback</button>
+                  <button class="btn cta soft" type="button" id="view-feedback">View Feedback</button>
+                </div>
+              </form>
+              <div id="feedback-list" style="margin-top:12px"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="page-inno" class="card" style="display:none">
+        <div class="inno-hero" style="height:180px;border-radius:12px;position:relative;overflow:hidden;background:linear-gradient(135deg, rgba(155,89,245,0.12), rgba(45,212,230,0.08));padding:18px">
+          <h2 style="margin:0;font-size:20px">💡 Innoverse — Labs & Long-term Projects</h2>
+          <div class="muted small-muted" style="margin-top:6px">Post long-term ideas & collaborate</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:12px;margin-top:12px">
+          <div>
+            <div class="card">
+              <h3 style="margin:0 0 8px 0">Idea Feed</h3>
+              <form id="idea-form">
+                <input id="idea-title" placeholder="Idea title" required />
+                <textarea id="idea-desc" rows="3" placeholder="Short description"></textarea>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="btn cta primary" type="submit">Post Idea</button>
+                  <button class="btn cta soft" type="button" id="explore-ideas">Explore</button>
+                </div>
+              </form>
+              <div id="idea-feed" style="margin-top:12px"></div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h3 style="margin:0 0 8px 0">Project Chat (Team)</h3>
+              <div class="chat">
+                <div id="chat-window" class="chat-window" aria-live="polite"></div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <input id="chat-input" placeholder="Message to team" />
+                  <button class="btn cta primary" id="send-chat">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <h4 style="margin:0 0 8px 0">Inno Projects</h4>
+              <div id="inno-projects"></div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h4 style="margin:0 0 8px 0">Tags</h4>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><div class="pill">AI</div><div class="pill">IoT</div><div class="pill">Design</div><div class="pill">Health</div></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="page-about" class="card" style="display:none">
+        <h2 style="margin:0">About</h2>
+        <p class="muted-lg">Hack Saathi — neon, playful, gamified hackathon platform demo. Built for collaboration, reviews and celebration.</p>
+      </section>
+
+    </main>
+
+  </div>
+
+  <div id="participant-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 id="pm-title">Participant Chat</h3>
+        <button class="close" id="close-participant" aria-label="Close">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:12px;margin-top:12px">
+        <div>
+          <div id="pm-chat-window" class="chat-window"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="pm-chat-input" placeholder="Message..." />
+            <button class="btn cta primary" id="pm-send">Send</button>
+          </div>
+        </div>
+        <aside>
+          <div class="card">
+            <div class="muted small-muted">Profile</div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+              <div class="avatar" id="pm-avatar">P</div>
+              <div>
+                <div id="pm-name"><strong>Participant</strong></div>
+                <div class="small-muted" id="pm-meta">role • university</div>
+              </div>
+            </div>
+            <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px;"> <a href="https://meet.new" target="_blank" class="btn cta primary" style="width:100%; text-align:center;">📹 Start/Join Meet</a> <button class="btn cta" id="request-review" style="width:100%">Request Review</button> <button class="btn cta soft" id="close-session" style="width:100%">End Session</button> </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* -------------------------
+   State & persistence
+   ------------------------- */
+const state = {
+  submissions: JSON.parse(localStorage.getItem('submissions')||'[]'),
+  participants: JSON.parse(localStorage.getItem('participants')||'[]'),
+  ideas: JSON.parse(localStorage.getItem('ideas')||'[]'),
+  chats: JSON.parse(localStorage.getItem('chats')||'[]'), // team chat
+  pmChats: JSON.parse(localStorage.getItem('pmChats')||'{}'), // private chats per participant email/name
+  judgesFeedback: JSON.parse(localStorage.getItem('judgesFeedback')||'[]'),
+  profile: JSON.parse(localStorage.getItem('profile')|| JSON.stringify({name:'Guest',role:'Visitor',initials:'HT',xp:30,level:1}))
+};
+
+function saveState(){ 
+  localStorage.setItem('submissions', JSON.stringify(state.submissions));
+  localStorage.setItem('participants', JSON.stringify(state.participants));
+  localStorage.setItem('ideas', JSON.stringify(state.ideas));
+  localStorage.setItem('chats', JSON.stringify(state.chats));
+  localStorage.setItem('pmChats', JSON.stringify(state.pmChats));
+  localStorage.setItem('judgesFeedback', JSON.stringify(state.judgesFeedback));
+  localStorage.setItem('profile', JSON.stringify(state.profile));
+}
+
+/* -------------------------
+   Small helpers
+   ------------------------- */
+function el(id){ return document.getElementById(id); }
+function create(tag, props = {}, html = ''){ const d = document.createElement(tag); Object.assign(d, props); if(html) d.innerHTML = html; return d; }
+function notify(msg){ /* small toast */ const t = create('div',{className:'toast'},msg); Object.assign(t.style,{position:'fixed',right:'20px',bottom:'20px',background:'linear-gradient(90deg,#9b59f5,#2dd4e6)',color:state.profile?.bg||'#0a0a14',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 8px 30px rgba(155,89,245,0.2)',zIndex:200}); document.body.appendChild(t); setTimeout(()=>t.style.opacity=0,2200); setTimeout(()=>t.remove(),3000); }
+
+/* -------------------------
+   Gamification: XP & Levels
+   ------------------------- */
+function addXP(amount, reason){
+  state.profile.xp = (state.profile.xp||0) + amount;
+  // level threshold example: level * 100
+  const next = (state.profile.level||1)*100;
+  if(state.profile.xp >= next){
+    state.profile.level += 1;
+    state.profile.xp = state.profile.xp - next;
+    launchConfetti(80);
+    notify(`Level up! You reached Level ${state.profile.level}`);
+  }
+  saveState(); renderProfile();
+}
+function renderProfile(){
+  const p = state.profile;
+  el('pr-name').textContent = p.name || 'Guest';
+  el('pr-role').textContent = p.role || 'Visitor';
+  el('avatar').textContent = p.initials || (p.name? initialOf(p.name) : 'HT');
+  el('pr-level').textContent = p.level || 1;
+  el('pr-xp').textContent = `${p.xp||0} XP`;
+  const percent = Math.min(100, Math.round(((p.xp||0)/((p.level||1)*100))*100));
+  el('xp-fill').style.width = percent + '%';
+  // side badges
+  const badges = JSON.parse(localStorage.getItem('myBadges')||JSON.stringify(['Early Bird']));
+  const sb = el('sidebar-badges'); sb.innerHTML=''; badges.forEach(b=> sb.appendChild(create('div',{className:'badge'}, b)));
+}
+function initialOf(name){
+  return name.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase();
+}
+renderProfile();
+
+/* -------------------------
+   Navigation
+   ------------------------- */
+const pages = {
+  home: el('page-home'),
+  hack: el('page-hack'),
+  inno: el('page-inno'),
+  about: el('page-about')
+};
+function hideAll(){ Object.values(pages).forEach(p => p.style.display = 'none'); document.querySelectorAll('.sidebar button').forEach(b=>b.classList?.remove('active')); document.querySelectorAll('nav.topnav a').forEach(a=>a.classList?.remove('active')); }
+function showPage(name){
+  hideAll();
+  if(name==='home') { pages.home.style.display='block'; el('n-home')?.classList?.add('active'); }
+  if(name==='hack') { pages.hack.style.display='block'; el('n-hack')?.classList?.add('active'); }
+  if(name==='inno') { pages.inno.style.display='block'; el('n-inno')?.classList?.add('active'); }
+  if(name==='about') { pages.about.style.display='block'; el('n-about')?.classList?.add('active'); }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.sidebar button').forEach(b=>{
+  b.addEventListener('click', ()=> {
+    const id = b.id ? b.id.replace('nav-','') : '';
+    if(id==='home') showPage('home');
+  });
+});
+el('n-home').addEventListener('click', (e)=>{ e.preventDefault(); showPage('home') });
+el('n-hack').addEventListener('click', (e)=>{ e.preventDefault(); showPage('hack') });
+el('n-inno').addEventListener('click', (e)=>{ e.preventDefault(); showPage('inno') });
+el('n-about').addEventListener('click', (e)=>{ e.preventDefault(); showPage('about') });
+
+showPage('home');
+
+/* -------------------------
+   Home render (prev hacks, projects, leaderboard)
+   ------------------------- */
+function renderHome(){
+  const prevGallery = el('prev-gallery');
+  const prev = state.hacks || [{title:'HackSaathi Oct 2025', winners:'Team Nova'},{title:'UniHack 2024', winners:'Alpha'}];
+  prevGallery.innerHTML = '';
+  (state.hacks||prev).forEach(h=>{
+    const card = create('div',{className:'project'}, `<strong>${h.title}</strong><div class="muted small-muted">${h.winners?('Winners: '+h.winners):''}</div>`);
+    prevGallery.appendChild(card);
+  });
+
+  const projContainer = el('home-projects'); projContainer.innerHTML='';
+  (state.submissions||[]).slice(0,6).forEach(s=>{
+    const d = create('div',{style:'padding:8px;border-radius:8px;margin-top:8px;border:1px solid rgba(255,255,255,0.06)'});
+    d.innerHTML = `<strong>${s.title}</strong><div class="small-muted">${s.desc? s.desc.slice(0,80): ''}</div>`;
+    projContainer.appendChild(d);
+  });
+
+  // leaderboard - sort participants by xp in profile if present
+  const lb = el('leaderboard'); lb.innerHTML='';
+  const all = JSON.parse(localStorage.getItem('profiles')||'[]');
+  const combined = [state.profile, ...all].slice(0,8);
+  combined.sort((a,b)=> (b.xp||0) - (a.xp||0));
+  combined.slice(0,6).forEach((p, i)=> {
+    const elb = create('div',{style:'display:flex;justify-content:space-between;align-items:center;padding:6px;border-radius:8px;margin-top:6px;background:rgba(255,255,255,0.06)'});
+    elb.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--neon-1),var(--neon-2));display:flex;align-items:center;justify-content:center;color:var(--bg)">${p.initials||initialOf(p.name||'G')}</div><div><strong style="font-size:14px">${p.name||'Guest'}</strong><div class="small-muted">${p.role||'Participant'}</div></div></div><div><strong>${p.xp||0} XP</strong></div>`;
+    lb.appendChild(elb);
+  });
+}
+renderHome();
+
+/* -------------------------
+   Signup modal behavior (simple profile set)
+   ------------------------- */
+const signupModal = create('div',{className:'modal-backdrop', id:'signup-modal'}, '');
+signupModal.innerHTML = `<div class="modal" role="document">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h3>Sign up / Login</h3><button class="close" id="close-signup" aria-label="Close">✕</button></div>
+  <form id="signup-form" autocomplete="off">
+    <label>Name<input id="su-name" required/></label>
+    <label>Email<input id="su-email" type="email" required/></label>
+    <label>Role<select id="su-role"><option>Participant</option><option>Judge</option><option>Admin</option></select></label>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn cta primary" type="submit">Save</button>
+      <button class="btn cta soft" type="button" id="close-signup-2">Close</button>
+    </div>
+  </form>
+</div>`;
+document.body.appendChild(signupModal);
+
+el('open-signup')?.addEventListener?.('click', ()=> { signupModal.classList.add('open'); signupModal.style.display='flex'; });
+el('btn-sign')?.addEventListener?.('click', ()=> { signupModal.classList.add('open'); signupModal.style.display='flex'; });
+signupModal.addEventListener('click', (e)=>{ if(e.target===signupModal) { signupModal.classList.remove('open'); signupModal.style.display='none'; } });
+el('close-signup')?.addEventListener('click', ()=> signupModal.classList.remove('open') || (signupModal.style.display='none'));
+el('close-signup-2')?.addEventListener('click', ()=> signupModal.classList.remove('open') || (signupModal.style.display='none'));
+
+el('signup-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const name = el('su-name').value.trim(), email = el('su-email').value.trim(), role = el('su-role').value;
+  if(!name || !email) return alert('Name & email required');
+  state.profile.name = name; state.profile.role = role; state.profile.initials = initialOf(name);
+  saveState(); renderProfile();
+  notify('Profile saved — welcome ' + name);
+  signupModal.classList.remove('open'); signupModal.style.display='none';
+  // store to global profiles list (for leaderboard)
+  const profiles = JSON.parse(localStorage.getItem('profiles')||'[]');
+  profiles.push({...state.profile});
+  localStorage.setItem('profiles', JSON.stringify(profiles));
+});
+
+
+/* -------------------------
+   Hackathon Registration & Submission
+   ------------------------- */
+el('reg-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const p = {
+    name: el('reg-name').value.trim(),
+    email: el('reg-email').value.trim(),
+    role: el('reg-role').value,
+    university: el('reg-university').value.trim(),
+    degree: el('reg-degree').value,
+    gradyear: el('reg-gradyear').value,
+    skills: (el('reg-skills').value||'').split(',').map(s=>s.trim()).filter(Boolean)
+  };
+  if(!p.name || !p.email){ alert('Name and email required'); return; }
+  state.participants.push(p);
+  saveState();
+  updateParticipantList();
+  addXP(30,'Register');
+  awardBadge('Registered');
+  el('reg-form').reset();
+  notify('Registered — '+p.name);
+});
+
+el('proj-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const s = {
+    id: 'p'+(state.submissions.length+1),
+    title: el('proj-title').value.trim(),
+    desc: el('proj-desc').value.trim(),
+    git: el('proj-git').value.trim(),
+    video: el('proj-video').value.trim(),
+    votes: 0,
+    author: state.profile.name||'Guest'
+  };
+  if(!s.title){ alert('Project title required'); return; }
+  state.submissions.unshift(s);
+  saveState();
+  renderGallery();
+  renderHome();
+  addXP(50,'Submitted project');
+  awardBadge('Contributor');
+  el('proj-form').reset();
+  notify('Project submitted — good luck!');
+});
+
+/* -------------------------
+   Project Gallery & Detail Modal
+   ------------------------- */
+function renderGallery(){
+  const g = el('gallery'); g.innerHTML = '';
+  (state.submissions||[]).forEach(s=>{
+    const d = create('div',{className:'project'});
+    d.innerHTML = `<strong>${s.title}</strong><div class="small-muted">${s.author} • ${s.votes||0} votes</div><div class="muted-lg" style="margin-top:6px">${s.desc.slice(0,100)}...</div><div style="margin-top:8px;display:flex;gap:8px"><button class="btn cta" data-vote="${s.id}">Vote</button><button class="btn cta soft" data-open="${s.id}">Details</button></div>`;
+    g.appendChild(d);
+  });
+}
+renderGallery();
+
+el('gallery').addEventListener('click', e=>{
+  const v = e.target.closest('[data-vote]');
+  const o = e.target.closest('[data-open]');
+  if(v){
+    const id = v.getAttribute('data-vote');
+    const p = state.submissions.find(s=>s.id===id);
+    if(p){
+      p.votes = (p.votes||0)+1;
+      saveState();
+      renderGallery();
+      awardBadge('Perfect Pitch');
+      addXP(10,'Voted');
+    }
+  }
+  if(o){
+    const id = o.getAttribute('data-open');
+    const p = state.submissions.find(s=>s.id===id);
+    if(p){
+      openDetailModal(p.title, `<p>${p.desc}</p><p class="small-muted">Git: ${p.git||'—'}</p><p class="small-muted">Video: ${p.video||'—'}</p>`);
+    }
+  }
+});
+
+/* -------------------------
+   Participant List & Private Chat
+   ------------------------- */
+function updateParticipantList(){
+  const list = el('participant-list');
+  list.innerHTML='';
+  (state.participants||[]).forEach(p=>{
+    const d = create('div',{style:'padding:8px;border-radius:8px;margin-top:8px;background:rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center'});
+    d.innerHTML = `<div><strong>${p.name}</strong><div class="small-muted">${p.university || p.role} • ${p.degree||''}</div></div><div style="display:flex;gap:8px"><button class="btn cta soft" data-chat="${p.email||p.name}">Chat</button><button class="btn cta" data-review="${p.email||p.name}">Review</button></div>`;
+    list.appendChild(d);
+  });
+}
+updateParticipantList();
+
+/* Participant modal open handlers (Personal Chat Feature) */
+const participantModal = el('participant-modal');
+el('participant-list')?.addEventListener('click', e=>{
+  const chatBtn = e.target.closest('[data-chat]');
+  const reviewBtn = e.target.closest('[data-review]');
+  if(chatBtn){
+    openParticipantSession(chatBtn.getAttribute('data-chat'));
+  }
+  if(reviewBtn){
+    openParticipantSession(reviewBtn.getAttribute('data-review'));
+  }
+});
+
+function openParticipantSession(id){
+  const p = state.participants.find(x=> (x.email===id) || (x.name===id)) || {name:id, email:id, role:'Participant', university:'—'};
+  el('pm-title').textContent = 'Chat with ' + p.name;
+  el('pm-avatar').textContent = initialOf(p.name||p.email);
+  el('pm-name').textContent = p.name;
+  el('pm-meta').textContent = (p.role || '') + ' • ' + (p.university || '—');
+  
+  // load chat history from local state (pmChats is the storage for personal messages)
+  const key = id;
+  const history = state.pmChats[key] || [];
+  const win = el('pm-chat-window'); win.innerHTML='';
+  history.forEach(m=>{
+    const d = create('div',{className:'msg ' + (m.me? 'me':'them')}, m.text);
+    win.appendChild(d);
+  });
+  
+  participantModal.classList.add('open');
+  participantModal.style.display='flex';
+  
+  // attach send handler
+  el('pm-send').onclick = ()=>{
+    const txt = el('pm-chat-input').value.trim();
+    if(!txt) return;
+    const m = { text: txt, me: true, t: Date.now() };
+    (state.pmChats[key] = state.pmChats[key]||[]).push(m);
+    saveState();
+    el('pm-chat-window').appendChild(create('div',{className:'msg me'}, m.text));
+    el('pm-chat-input').value='';
+    el('pm-chat-window').scrollTop = el('pm-chat-window').scrollHeight;
+    addXP(10,'Chat participant');
+    notify('Message sent');
+  };
+  
+  el('close-participant').onclick = ()=>{
+    participantModal.classList.remove('open');
+    participantModal.style.display='none';
+  };
+}
+
+/* ------------------------- Team chat (inno) ------------------------- */
+function renderChat(){
+  const w=el('chat-window'); w.innerHTML='';
+  (state.chats||[]).forEach(m=>{
+    const div = create('div',{className:'msg '+(m.me?'me':'them')}, m.text);
+    w.appendChild(div);
+  });
+  w.scrollTop = w.scrollHeight;
+}
+renderChat();
+
+el('send-chat').addEventListener('click', ()=>{
+  const txt = el('chat-input').value.trim();
+  if(!txt) return;
+  state.chats.push({ text: txt, me: true, t: Date.now() });
+  saveState();
+  el('chat-input').value='';
+  renderChat();
+  addXP(5,'Team chat');
+});
+
+/* ------------------------- Judges feedback ------------------------- */
+el('judge-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = {
+    judge: el('judge-name').value.trim(),
+    project: el('judge-project').value.trim(),
+    feedback: el('judge-feedback').value.trim(),
+    t: Date.now()
+  };
+  if(!f.judge || !f.project || !f.feedback){ alert('Fill judge name, project and feedback'); return; }
+  state.judgesFeedback.unshift(f);
+  saveState();
+  renderFeedbackList();
+  addXP(25,'Submitted judge feedback');
+  notify('Feedback saved — thanks!');
+  el('judge-form').reset();
+});
+
+function renderFeedbackList(){
+  const f = el('feedback-list'); f.innerHTML='';
+  (state.judgesFeedback||[]).forEach(it=>{
+    const d = create('div',{style:'padding:8px;border-radius:8px;margin-top:8px;background:rgba(255,255,255,0.06)'});
+    d.innerHTML = `<strong>${it.project}</strong><div class="small-muted">by ${it.judge} • ${new Date(it.t).toLocaleString()}</div><div style="margin-top:6px">${it.feedback}</div>`;
+    f.appendChild(d);
+  });
+}
+renderFeedbackList();
+
+/* ------------------------- Judges panel - small list ------------------------- */
+function renderJudgeList(){
+  const elj = el('judge-list'); if(!elj) return; elj.innerHTML='';
+  (state.submissions||[]).forEach(s=>{
+    const d = create('div',{style:'padding:10px;background:rgba(255,255,255,0.06);border-radius:8px;margin-top:8px;'});
+    d.innerHTML = `<strong>${s.title}</strong><div class="small-muted" style="font-size:13px">${(s.desc||'').slice(0,80)}...</div> <div style="margin-top:8px;display:flex;gap:8px"> <button class="btn cta soft" data-view="${s.id}">View</button> <button class="btn cta" data-judge="${s.id}">Judge</button> </div>`;
+    elj.appendChild(d);
+  });
+}
+renderJudgeList();
+
+
+/* ------------------------- Innoverse Ideas ------------------------- */
+el('idea-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const i = { title: el('idea-title').value.trim(), desc: el('idea-desc').value.trim(), t: Date.now() };
+  if(!i.title) return alert('Title required');
+  state.ideas.unshift(i); saveState(); renderIdeaFeed(); addXP(15,'Posted idea'); notify('Idea posted!'); el('idea-form').reset();
+});
+
+function renderIdeaFeed(){
+  const f = el('idea-feed'); f.innerHTML='';
+  (state.ideas||[]).forEach(i=>{
+    const d = create('div',{style:'padding:8px;border-radius:8px;margin-top:8px;background:rgba(255,255,255,0.06)'});
+    d.innerHTML = `<strong>${i.title}</strong><div class="small-muted">${new Date(i.t).toLocaleString()}</div><div style="margin-top:6px">${i.desc}</div>`;
+    f.appendChild(d);
+  });
+}
+renderIdeaFeed();
+
+/* ------------------------- Admin controls for submissions (dummy list) ------------------------- */
+function renderAdminSubs(){
+  const eladmin = el('admin-subs'); if(!eladmin) return; eladmin.innerHTML='';
+  (state.submissions||[]).forEach(s=>{
+    const d = create('div',{style:'padding:8px;border-radius:8px;margin-top:8px;background:rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center'});
+    d.innerHTML = `<div><strong>${s.title}</strong><div class="small-muted">by ${s.author} • ${s.votes||0} votes</div></div><button class="btn cta soft" data-delete="${s.id}">Delete</button>`;
+    eladmin.appendChild(d);
+  });
+}
+renderAdminSubs();
+document.addEventListener('click', e=>{
+  const del = e.target.closest('[data-delete]');
+  if(del){
+    const id = del.getAttribute('data-delete');
+    state.submissions = state.submissions.filter(s=>s.id!==id);
+    saveState();
+    renderGallery();
+    renderJudgeList();
+    renderAdminSubs();
+    alert('Submission removed');
+  }
+});
+
+/* ------------------------- Detail modal ------------------------- */
+const detailModal = create('div',{className:'modal-backdrop', id:'detail-modal'}, '');
+detailModal.innerHTML = `<div class="modal" role="document"><div style="display:flex;justify-content:space-between;align-items:center"><h3 id="detail-title">Project</h3><button class="close" id="close-detail" aria-label="Close">✕</button></div><div id="detail-body" style="margin-top:12px"></div></div>`;
+document.body.appendChild(detailModal);
+function openDetailModal(title, bodyHtml){
+  el('detail-title').textContent = title;
+  el('detail-body').innerHTML = bodyHtml;
+  detailModal.classList.add('open');
+  detailModal.style.display='flex';
+}
+document.addEventListener('click', e=>{
+  if(e.target && e.target.id==='close-detail') {
+    detailModal.classList.remove('open');
+    detailModal.style.display='none';
+  }
+});
+
+/* ------------------------- Mini Chatbot (mock engine) ------------------------- */
+const miniChatWindow = el('mini-chat-window');
+const miniHistory = JSON.parse(localStorage.getItem('miniHistory')||'[]');
+function renderMiniHistory(){
+  miniChatWindow.innerHTML='';
+  miniHistory.slice(-20).forEach(m=>{
+    miniChatWindow.appendChild(create('div',{className:'msg '+(m.me? 'me':'them')}, m.text));
+  });
+  miniChatWindow.scrollTop = miniChatWindow.scrollHeight;
+}
+renderMiniHistory();
+el('mini-chat-send').addEventListener('click', ()=> {
+  const q = el('mini-chat-input').value.trim();
+  if(!q) return;
+  miniHistory.push({text:q,me:true,t:Date.now()});
+  localStorage.setItem('miniHistory', JSON.stringify(miniHistory));
+  renderMiniHistory();
+  el('mini-chat-input').value='';
+  setTimeout(()=> {
+    const resp = botReply(q);
+    miniHistory.push({text:resp,me:false,t:Date.now()});
+    localStorage.setItem('miniHistory', JSON.stringify(miniHistory));
+    renderMiniHistory();
+    addXP(3,'Used chatbot');
+  }, 450 + Math.random()*400);
+});
+function botReply(q){
+  const s = q.toLowerCase();
+  if(s.includes('pitch') || s.includes('presentation')) return "Keep slides short: Problem → Solution → Demo → Impact. Use numbers and show a quick prototype.";
+  if(s.includes('judge') || s.includes('score')) return "Judges like clarity and reproducibility. Add a short checklist for criteria: novelty, execution, impact.";
+  if(s.includes('idea')) return "Nice! Try combining AI with real-world sensors; or tackle a local problem in your university. Think big!";
+  if(s.includes('team')) return "Good teams divide labor by skill (frontend, backend, design). Make sure to use Git and hold daily standups.";
+  return "I'm the Hack Saathi assistant! I can help with general hackathon tips, idea generation, and process guidance. Try asking about 'pitch' or 'team'.";
+}
+
+
+/* ------------------------- Confetti Effect ------------------------- */
+const canvas = el('confetti');
+const ctx = canvas.getContext('2d');
+let pieces = [];
+let t = 0;
+function launchConfetti(count=50){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  pieces = []; t=0;
+  for(let i=0; i<count; i++){
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: canvas.height,
+      size: Math.random() * 8 + 4,
+      vy: Math.random() * -10 - 5,
+      vr: Math.random() * 0.1 - 0.05,
+      rot: Math.random() * Math.PI*2,
+      color: ['var(--neon-1)','var(--neon-2)','var(--neon-3)'][Math.floor(Math.random()*3)]
+    });
+  }
+  function frame(){
+    ctx.clearRect(0,0,c.width,c.height);
+    pieces.forEach(p=>{
+      p.y += p.vy; p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+      ctx.restore();
+    });
+    t++;
+    if(t<170) requestAnimationFrame(frame);
+    else ctx.clearRect(0,0,c.width,c.height);
+  }
+  frame();
+}
+
+/* ------------------------- Small utility UI wiring ------------------------- */
+el('to-inno').addEventListener('click', ()=>{ launchConfetti(50); showPage('inno'); });
+el('to-hack').addEventListener('click', ()=> showPage('hack'));
+el('link-chat').addEventListener('click', ()=> { showPage('home'); document.querySelector('#mini-chat-input').focus(); });
+el('link-meet').addEventListener('click', ()=> { window.open('https://meet.new', '_blank'); notify('Opening Google Meet in new tab...'); }); // NEW JS HANDLER
+/* sidebar quick task buttons */
+document.querySelectorAll('[data-action]').forEach(b=>{
+  b.addEventListener('click', ()=> {
+    const a = b.getAttribute('data-action');
+    if(a==='submit-project'){ showPage('hack'); el('proj-title').focus(); }
+    if(a==='post-idea'){ showPage('inno'); el('idea-title').focus(); }
+    if(a==='give-feedback'){ showPage('hack'); el('judge-name').focus(); }
+  });
+});
+
+/* keyboard shortcut ctrl/cmd+k open signup */
+window.addEventListener('keydown', e=>{
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){
+    e.preventDefault();
+    signupModal.classList.add('open');
+    signupModal.style.display='flex';
+  }
+});
+
+/* small startup: populate some demo participants & submissions if empty */
+if(!state.participants.length){
+  state.participants.push({name:'Riya',email:'riya@example.com',role:'Participant',university:'IGDTUW',degree:'Undergraduate',skills:['frontend','ml']});
+  state.participants.push({name:'Aman',email:'aman@example.com',role:'Mentor',university:'NSIT',degree:'Graduate',skills:['backend','ml']});
+  saveState(); updateParticipantList();
+}
+if(!state.submissions.length){
+  state.submissions.push({id:'p1',title:'Nova — Smart Assist',desc:'AI assistant for campus navigation with minimal sensors',votes:3,author:'Riya'});
+  state.submissions.push({id:'p2',title:'GreenPulse',desc:'IoT sensors for plant watering schedules',votes:6,author:'Aman'});
+  saveState(); renderGallery(); renderHome();
+}
+
+/* award badges helper */
+function awardBadge(name){
+  const badges = JSON.parse(localStorage.getItem('myBadges')||'[]');
+  if(!badges.includes(name)){ badges.push(name); localStorage.setItem('myBadges', JSON.stringify(badges)); renderProfile(); notify('New Badge: '+name); }
+}
+
+/* ------------------------- UPI payment flow (Patym Link Added) ------------------------- */
+(async function(){
+  // Create a simple modal to show QR + link (omitted for brevity but assumed present if needed for API flow)
+  function showUPIModal(qrBase64, upiUri, txid){
+    let modal = document.getElementById('upi-modal');
+    if(!modal){
+      modal = document.createElement('div'); modal.id='upi-modal';
+      modal.style='position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:400';
+      modal.innerHTML = `<div class="modal" style="width:400px;max-width:96%;padding:18px"><h3 style="margin-top:0">Pay with UPI</h3><p>Scan the QR or click the link.</p><img src="data:image/png;base64,${qrBase64}" style="width:100%;height:auto;margin:10px 0"/><a href="${upiUri}" class="btn cta primary" style="width:100%;text-align:center;margin-top:10px">Open UPI App</a><button class="btn cta soft" style="width:100%;margin-top:8px" onclick="document.getElementById('upi-modal').style.display='none'">Close</button></div>`;
+      document.body.appendChild(modal);
+    }
+    modal.style.display='flex';
+  }
+
+  // UPI BUTTON MODIFICATION: Changed to an <a> tag linking directly to Paytm.
+  const payBtn = document.createElement('a');
+  payBtn.className='btn cta primary';
+  payBtn.textContent='Pay UPI via Paytm';
+  payBtn.href='https://paytm.com/'; // <-- Direct Paytm link added
+  payBtn.target='_blank'; // Open in a new tab
+  payBtn.style.marginLeft='12px';
+  
+  // attach to topbar
+  document.querySelector('nav.topnav')?.appendChild(payBtn);
+
+  // small bootstrap: fetch me to set profile (if API existed)
+  const me = await api('/auth/me');
+  if(me && me.user){
+    window.__profile = me.user;
+  }
+})();
+</script>
+<script>
+// Mock API function (used by the script)
+async function api(path, method='GET', body=null){
+  // This is a mock implementation since no backend is available.
+  console.log(`API Call: ${method} ${path}`, body);
+  if(path==='/auth/me') return {user: state.profile, ok: true};
+  if(path==='/payment/upi') return {
+    qr_base64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', // tiny mock QR
+    upi_uri: 'upi://pay?pa=yourupi@bank&pn=HackSaathi&am=50.00&cu=INR',
+    txid: 'TX'+Date.now()
+  };
+  return {ok: true};
+}
+document.getElementById('btn-sign').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const name = document.getElementById('su-name').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const role = document.getElementById('su-role').value.trim();
+  const r = await api('/auth/signup','POST',{name,email,role});
+  if(r.ok){
+    alert("Sign up success!");
+    window.location.reload(); // refresh to load user session
+  }else{
+    alert(r.error || "Error");
+  }
+});
+</script>
+</body>
+
+</html>
