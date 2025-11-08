@@ -1,1 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HACKSAATHI — Level Up</title>
+  <meta name="description" content="HACKSAATHI — neon-future landing. Level up your code. Unlock creativity. Beat the clock." />
+  <style>
+    :root{
+      --bg: #ffffff;
+      --text: #000000;
+      --muted: #6b7280;
+
+      /* pastel glow colors */
+      --p1: #ff9ff3; /* pink */
+      --p2: #7ef9ff; /* cyan */
+      --p3: #ffd6a5; /* warm yellow */
+      --p4: #c7f9d1; /* mint */
+      --p5: #cbb7ff; /* lilac */
+    }
+
+    /* Reset & base */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:var(--text);-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+    a{color:inherit}
+
+    /* Background layers */
+    .bg-layer { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .blob { position:absolute; border-radius:48% 52% 50% 50% / 50% 45% 55% 50%; opacity:0.28; filter:blur(20px); transform-origin:center; }
+    .blob.b1{width:420px;height:420px; left:6%; top:6%; background:linear-gradient(135deg,var(--p1),var(--p5)); animation: floatSlow 20s ease-in-out infinite; animation-delay:0s;}
+    .blob.b2{width:520px;height:520px; right:6%; top:10%; background:linear-gradient(135deg,var(--p2),var(--p4)); animation: floatSlow 26s ease-in-out infinite; animation-delay:2s;}
+    .blob.b3{width:260px;height:260px; left:10%; bottom:8%; background:linear-gradient(135deg,var(--p3),var(--p1)); animation: floatSlow 22s ease-in-out infinite; animation-delay:4s;}
+    .blob.b4{width:320px;height:320px; right:14%; bottom:12%; background:linear-gradient(135deg,var(--p5),var(--p2)); animation: floatSlow 24s ease-in-out infinite; animation-delay:6s;}
+
+    @keyframes floatSlow {
+      0% { transform: translateY(0) rotate(0deg) scale(1) }
+      50% { transform: translateY(-28px) rotate(6deg) scale(1.03) }
+      100% { transform: translateY(0) rotate(0deg) scale(1) }
+    }
+
+    /* Floating icons container (throughout page) */
+    .icons-layer { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:visible; }
+    .icon {
+      position:absolute; width:64px; height:64px; opacity:0.9;
+      transform-origin:center;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.06));
+    }
+    /* smaller on mobile */
+    @media (max-width:720px){ .icon{ width:44px; height:44px } }
+
+    /* individual icon styles and animation timings */
+    .icon.i1 { left:8%; top:18%; --gl: var(--p1); animation: drift 28s linear infinite; animation-delay:0s; animation-direction:alternate; }
+    .icon.i2 { left:22%; top:6%; --gl: var(--p2); animation: drift 32s linear infinite; animation-delay:3s; }
+    .icon.i3 { left:46%; top:12%; --gl: var(--p3); animation: drift 30s linear infinite; animation-delay:6s; }
+    .icon.i4 { left:70%; top:22%; --gl: var(--p4); animation: drift 36s linear infinite; animation-delay:9s; }
+    .icon.i5 { left:82%; top:8%; --gl: var(--p5); animation: drift 34s linear infinite; animation-delay:12s; }
+    .icon.i6 { left:12%; top:62%; --gl: var(--p2); animation: drift 38s linear infinite; animation-delay:1s; }
+    .icon.i7 { left:34%; top:72%; --gl: var(--p1); animation: drift 30s linear infinite; animation-delay:4s; }
+    .icon.i8 { left:58%; top:60%; --gl: var(--p4); animation: drift 26s linear infinite; animation-delay:2s; }
+    .icon.i9 { left:78%; top:68%; --gl: var(--p3); animation: drift 40s linear infinite; animation-delay:7s; }
+    .icon.i10{ left:50%; top:40%; --gl: var(--p5); animation: drift 36s linear infinite; animation-delay:11s; }
+
+    /* drift and fade animation (slow + smooth fade in/out) */
+    @keyframes drift {
+      0% { transform: translateY(0) translateX(0) scale(0.95); opacity:0.12; filter: drop-shadow(0 6px 18px rgba(0,0,0,0.05)); }
+      25% { transform: translateY(-12px) translateX(8px) scale(1.00); opacity:0.22; }
+      50% { transform: translateY(-26px) translateX(-8px) scale(1.05); opacity:0.32; }
+      75% { transform: translateY(-12px) translateX(6px) scale(1.01); opacity:0.22; }
+      100%{ transform: translateY(0) translateX(0) scale(0.96); opacity:0.12; }
+    }
+
+    /* icon inner glow (stroke color controlled by --gl) */
+    .icon svg path, .icon svg circle, .icon svg line, .icon svg polyline { stroke: var(--gl); stroke-width:1.6; fill: none; stroke-linecap:round; stroke-linejoin:round; opacity:0.95; filter: drop-shadow(0 6px 18px rgba(0,0,0,0.04)); }
+
+    /* Hero / Typographic layout */
+    .page { position:relative; z-index:2; }
+    .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:48px 20px; }
+    .brand {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      font-weight:900;
+      font-size: clamp(64px, 12vw, 160px); /* huge */
+      line-height:0.9;
+      color:var(--text);
+      margin:0;
+      letter-spacing:6px;
+      text-shadow:
+        0 12px 40px rgba(0,0,0,0.06),
+        24px 20px 46px rgba(255,159,243,0.03),
+        -18px -14px 40px rgba(126,249,255,0.02);
+    }
+
+    /* typing phrase style - large and responsive */
+    .typing-wrap { margin-top:18px; display:flex; align-items:center; gap:12px; justify-content:center; }
+    .typing {
+      font-family: 'Poppins', system-ui, sans-serif;
+      font-weight:600;
+      font-size: clamp(28px, 5.5vw, 64px); /* large: ~60px desktop */
+      color:#0b0b0b;
+      letter-spacing:0.2px;
+      z-index:2;
+      display:inline-block;
+      white-space:nowrap;
+      padding:6px 8px;
+    }
+    .cursor {
+      width:6px; height:1.06em; display:inline-block; background:var(--text); border-radius:2px; animation: blink 900ms steps(2,end) infinite; opacity:0.95;
+    }
+    @keyframes blink{ 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+    .scroll-note { margin-top:28px; color:var(--muted); font-size:14px; display:flex; gap:10px; align-items:center; justify-content:center; cursor:pointer; }
+
+    /* Advantages area */
+    .advantages { padding:80px 20px 120px; background:var(--bg); border-top-left-radius:48px; border-top-right-radius:48px; margin-top:36px; position:relative; z-index:2; }
+    .container { max-width:1200px; margin:0 auto; text-align:center; }
+    .advantages h2 { font-family:'Inter', sans-serif; font-weight:800; font-size:34px; color:#07021b; margin-bottom:14px; letter-spacing:0.6px; }
+    .subtitle { color:var(--muted); margin-bottom:26px; font-size:15px; }
+
+    .cards { display:flex; gap:22px; flex-wrap:wrap; justify-content:center; margin-top:28px; }
+    .card { width:320px; padding:20px; border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,255,0.98)); box-shadow:0 10px 30px rgba(12,18,28,0.06); border:1px solid rgba(12,18,28,0.03); text-align:left; transition:transform .28s ease, box-shadow .28s ease; }
+    .card:hover { transform:translateY(-10px); box-shadow:0 22px 58px rgba(12,18,28,0.08); }
+    .card h3 { margin:0 0 8px 0; font-size:18px; color:#081433; }
+    .card p { margin:0; color:var(--muted); line-height:1.5; font-size:14px; }
+
+    .discover { display:inline-block; margin-top:40px; padding:14px 34px; border-radius:999px; background:#0b0222; color:#fff; text-decoration:none; font-weight:700; box-shadow:0 18px 50px rgba(11,2,34,0.12); transition: transform .18s ease; }
+    .discover:hover { transform:translateY(-6px); }
+
+    /* responsive small screens */
+    @media (max-width:720px){
+      .brand{ letter-spacing:2px; }
+      .typing{ font-size: clamp(20px,7vw,36px); }
+      .cards{ flex-direction:column; align-items:center; }
+      .card{ width:92%; }
+      .blob { filter: blur(14px); opacity:0.24; }
+    }
+  </style>
+</head>
+<body>
+  <!-- background blobs -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="blob b4"></div>
+  </div>
+
+  <!-- floating icons (SVGs embedded) -->
+  <div class="icons-layer" aria-hidden="true">
+    <!-- gear / settings -->
+    <div class="icon i1" title="settings">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"></path>
+        <path d="M19.4 13.1a1 1 0 0 0 .1-1l-1.2-2.1a1 1 0 0 0-.9-.5l-2 .2a6.7 6.7 0 0 0-1.2-.7l-.3-2.1A1 1 0 0 0 12 3h-1.9a1 1 0 0 0-1 .7L8.7 6a6.7 6.7 0 0 0-1.2.7l-2-.2a1 1 0 0 0-.9.5L2.6 9.9a1 1 0 0 0 .1 1l1.2 2.1a1 1 0 0 0 .9.5l2-.2c.3.3.7.5 1 .7l.3 2.1c.1.5.6.8 1.1.8H12a1 1 0 0 0 1-.7l.3-2a6.7 6.7 0 0 0 1.2-.7l2 .2a1 1 0 0 0 .9-.5l1.2-2.1z"></path>
+      </svg>
+    </div>
+
+    <!-- bulb / idea -->
+    <div class="icon i2" title="idea">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M9 18h6v1a1 1 0 0 1-1 1H10a1 1 0 0 1-1-1v-1z"></path>
+        <path d="M12 2a6 6 0 0 0-4 10c0 1.1.3 1.7.9 2.5.6.8 1.1 1.6 1.1 2.5v.5h2v-.5c0-.9.5-1.7 1.1-2.5.6-.8.9-1.4.9-2.5A6 6 0 0 0 12 2z"></path>
+      </svg>
+    </div>
+
+    <!-- code brackets -->
+    <div class="icon i3" title="code">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <polyline points="7 8 3 12 7 16"></polyline>
+        <polyline points="17 8 21 12 17 16"></polyline>
+        <path d="M14 4l-4 16"></path>
+      </svg>
+    </div>
+
+    <!-- rocket -->
+    <div class="icon i4" title="launch">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M2 21s4-1 6-3 6-6 8-8 3-6 3-6-3 0-6 3-6 6-8 8-3 6-3 6z"></path>
+        <path d="M12 2l0 6"></path>
+      </svg>
+    </div>
+
+    <!-- circuit / node -->
+    <div class="icon i5" title="circuit">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <circle cx="6" cy="6" r="1.6"></circle>
+        <circle cx="18" cy="6" r="1.6"></circle>
+        <circle cx="12" cy="18" r="1.6"></circle>
+        <path d="M6 6v6l6 6v-6"></path>
+        <path d="M18 6h-6"></path>
+      </svg>
+    </div>
+
+    <!-- extra copies placed across page to make icons appear 'throughout' -->
+    <div class="icon i6" title="gear copy">
+      <!-- reuse gear svg -->
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"></path>
+        <path d="M19.4 13.1a1 1 0 0 0 .1-1l-1.2-2.1a1 1 0 0 0-.9-.5l-2 .2a6.7 6.7 0 0 0-1.2-.7l-.3-2.1A1 1 0 0 0 12 3h-1.9a1 1 0 0 0-1 .7L8.7 6a6.7 6.7 0 0 0-1.2.7l-2-.2a1 1 0 0 0-.9.5L2.6 9.9a1 1 0 0 0 .1 1l1.2 2.1a1 1 0 0 0 .9.5l2-.2c.3.3.7.5 1 .7l.3 2.1c.1.5.6.8 1.1.8H12a1 1 0 0 0 1-.7l.3-2a6.7 6.7 0 0 0 1.2-.7l2 .2a1 1 0 0 0 .9-.5l1.2-2.1z"></path>
+      </svg>
+    </div>
+
+    <div class="icon i7" title="rocket copy">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M2 21s4-1 6-3 6-6 8-8 3-6 3-6-3 0-6 3-6 6-8 8-3 6-3 6z"></path>
+        <path d="M12 2l0 6"></path>
+      </svg>
+    </div>
+
+    <div class="icon i8" title="bulb copy">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M9 18h6v1a1 1 0 0 1-1 1H10a1 1 0 0 1-1-1v-1z"></path>
+        <path d="M12 2a6 6 0 0 0-4 10c0 1.1.3 1.7.9 2.5.6.8 1.1 1.6 1.1 2.5v.5h2v-.5c0-.9.5-1.7 1.1-2.5.6-.8.9-1.4.9-2.5A6 6 0 0 0 12 2z"></path>
+      </svg>
+    </div>
+
+    <div class="icon i9" title="code copy">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <polyline points="7 8 3 12 7 16"></polyline>
+        <polyline points="17 8 21 12 17 16"></polyline>
+        <path d="M14 4l-4 16"></path>
+      </svg>
+    </div>
+
+    <div class="icon i10" title="circuit copy">
+      <svg viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <circle cx="6" cy="6" r="1.6"></circle>
+        <circle cx="18" cy="6" r="1.6"></circle>
+        <circle cx="12" cy="18" r="1.6"></circle>
+        <path d="M6 6v6l6 6v-6"></path>
+        <path d="M18 6h-6"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- page content -->
+  <div class="page" role="main">
+    <header class="hero" role="banner" aria-label="Hack Saathi hero">
+      <h1 class="brand" id="brand">HACKSAATHI</h1>
+
+      <div class="typing-wrap" aria-live="polite" aria-atomic="true">
+        <span class="typing" id="typing"></span><span class="cursor" aria-hidden="true"></span>
+      </div>
+
+      <div class="scroll-note" onclick="scrollDown()" role="button" aria-label="Scroll to advantages">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="transform:translateY(-2px)"><path d="M6 9l6 6 6-6" stroke="#6b7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="font-size:13px;color:var(--muted)">Scroll to learn more</div>
+      </div>
+    </header>
+
+    <section class="advantages" id="advantages" aria-labelledby="adv-title">
+      <div class="container">
+        <h2 id="adv-title">Why Join Hackathons & Innovate?</h2>
+        <div class="subtitle">Fast prototyping • Real-world problems • Mentors & prizes • Career boosts</div>
+
+        <div class="cards" role="list" aria-label="advantages list">
+          <article class="card" role="listitem">
+            <h3>💡 Build Real Skills</h3>
+            <p>Practice hands-on problem solving, rapid prototyping, and teamwork — all under pressure.</p>
+          </article>
+
+          <article class="card" role="listitem">
+            <h3>🌍 Network Globally</h3>
+            <p>Meet mentors, collaborate with peers, and open doors to internships and jobs.</p>
+          </article>
+
+          <article class="card" role="listitem">
+            <h3>🚀 Showcase Talent</h3>
+            <p>Present your project to judges and employers; win recognition, credits, or prizes.</p>
+          </article>
+        </div>
+
+        <a class="discover" id="discoverBtn" href="hack.html" aria-label="Discover Hack Saathi">Discover</a>
+      </div>
+    </section>
+  </div>
+
+
+  
+  <script>
+    // big typing animation: each phrase typed then erased
+    const phrases = ["Level up your code.", "Unlock your creativity.", "Beat the clock."];
+    const typingEl = document.getElementById('typing');
+    const cursor = document.querySelector('.cursor');
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let mode = 'typing';
+
+    const TYPING_SPEED = 45;    // ms per char (fast but readable)
+    const ERASING_SPEED = 30;
+    const HOLD_DELAY = 1200;    // hold full phrase
+
+    function typeLoop(){
+      const current = phrases[phraseIndex];
+      if(mode === 'typing'){
+        if(charIndex < current.length){
+          typingEl.textContent += current.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeLoop, TYPING_SPEED + Math.random()*40);
+        } else {
+          // hold the full phrase
+          setTimeout(()=>{ mode = 'erasing'; setTimeout(typeLoop, ERASING_SPEED); }, HOLD_DELAY);
+        }
+      } else if(mode === 'erasing'){
+        if(charIndex > 0){
+          typingEl.textContent = current.substring(0, charIndex-1);
+          charIndex--;
+          setTimeout(typeLoop, ERASING_SPEED + Math.random()*20);
+        } else {
+          mode = 'typing';
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          setTimeout(typeLoop, 300);
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=> {
+      // small delay then begin
+      setTimeout(typeLoop, 600);
+    });
+
+    // Smooth scroll
+    function scrollDown(){
+      document.getElementById('advantages').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Enhance icon glow: set stroke color from each element's --gl var (already used)
+    // Nothing else needed; animations controlled by CSS.
+
+    // Accessibility: allow discover via Enter key when focused
+    document.getElementById('discoverBtn').addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' ') { /* default link behavior will follow */ }
+    });
+
+  </script>
+</body>
+</html>
 
